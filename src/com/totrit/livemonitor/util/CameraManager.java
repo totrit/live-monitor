@@ -41,6 +41,7 @@ public class CameraManager {
 			assert(previewSize != null);
 			Camera.Parameters parameters = camera.getParameters();
 			parameters.setPreviewSize(previewSize.width, previewSize.height);
+			parameters.setPreviewFormat(ImageFormat.NV21);
 			// Set parameters for snapshot.
 			parameters.setPictureFormat(ImageFormat.JPEG);
 			parameters.setPictureSize(previewSize.width, previewSize.height);
@@ -58,6 +59,20 @@ public class CameraManager {
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean registerPreviewCallback(int cameraId, Camera.PreviewCallback cb, byte[] buff) {
+		startCamera(cameraId);
+		Camera camera = mCameras.get(cameraId);
+		//camera.stopPreview();
+		if (buff == null) {
+			camera.setPreviewCallback(cb);
+		} else {
+			camera.addCallbackBuffer(buff);
+			camera.setPreviewCallbackWithBuffer(cb);
+		}
+		//camera.startPreview();
+		return true;
 	}
 	
 	public boolean takePicture(int cameraId, Camera.PictureCallback callback) {
