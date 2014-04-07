@@ -10,41 +10,39 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class MainView extends SurfaceView {
-	
-	private final int mAttachedCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-	public MainView(Context context) {
-		super(context);
-		this.getHolder().addCallback(mSurfaceCallback);
-		// TODO Auto-generated constructor stub
-	}
+  private final int mAttachedCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-	SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
-		@Override
-		public void surfaceDestroyed(SurfaceHolder holder) {
-			CameraManager.getInstance().stopPreview(mAttachedCameraId);
-			CameraManager.getInstance().releaseCarema(mAttachedCameraId);
-		}
+  public MainView(Context context) {
+    super(context);
+    this.getHolder().addCallback(mSurfaceCallback);
+    // TODO Auto-generated constructor stub
+  }
 
-		@Override
-		public void surfaceCreated(SurfaceHolder holder) {
-//			CameraManager.getInstance().startPreview(getContext(), holder, getWidth(), getHeight());
-		}
+  SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+      CameraManager.getInstance().stopPreview(mAttachedCameraId);
+      CameraManager.getInstance().releaseCarema(mAttachedCameraId);
+    }
 
-		@Override
-		public void surfaceChanged(SurfaceHolder holder, int format, int width,
-				int height) {
-			// TODO
-			int rotation = ((Activity) getContext()).getWindowManager()
-					.getDefaultDisplay().getRotation();
-			CameraManager.getInstance().startPreview(holder, mAttachedCameraId, rotation, width, height);
-		}
-	};
-	
-	public void onConfigurationChanged(Configuration newConfig) {
-		int rotation = ((Activity) getContext()).getWindowManager()
-				.getDefaultDisplay().getRotation();
-		CameraManager.getInstance().startPreview(getHolder(), mAttachedCameraId, rotation, getWidth(), getHeight());
-	}
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+      // CameraManager.getInstance().startPreview(getContext(), holder, getWidth(), getHeight());
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+      // TODO
+      int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
+      CameraManager.getInstance().startPreview(holder, mAttachedCameraId, rotation, width, height);
+    }
+  };
+
+  public void onConfigurationChanged(Configuration newConfig) {
+    int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
+    CameraManager.getInstance().startPreview(getHolder(), mAttachedCameraId, rotation, getWidth(),
+        getHeight());
+  }
 
 }
