@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/fullscreen_content_controls"
             style="?buttonBarStyle"
             android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:background="@color/black_overlay"
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
-        </LinearLayout>
+        </RelativeLayout>
     </FrameLayout>
 
 </FrameLayout>
