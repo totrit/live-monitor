@@ -5,11 +5,13 @@ import com.totrit.livemonitor.util.Controller;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
 public class ProcessService extends Service {
@@ -19,10 +21,16 @@ public class ProcessService extends Service {
   /**
    * Messages that sent from activity.
    */
-  private final static int MSG_BASE_ACTIVITY = 0;
-  public final static int MSG_START_OBSERVE_PREVIEW = MSG_BASE_ACTIVITY + 1;
-  public final static int MSG_START_DETECT_AND_RECORD = MSG_BASE_ACTIVITY + 2;
-  public final static int MSG_STOP_ALL = MSG_BASE_ACTIVITY + 3;
+  private final static int MSG_BASE_FROM_ACTIVITY = 0;
+  public final static int MSG_START_OBSERVE_PREVIEW = MSG_BASE_FROM_ACTIVITY + 1;
+  public final static int MSG_START_DETECT_AND_RECORD = MSG_BASE_FROM_ACTIVITY + 2;
+  public final static int MSG_STOP_ALL = MSG_BASE_FROM_ACTIVITY + 3;
+  
+  /**
+   * Messages that sent to Activities, who are responsible to define the handling procedure.
+   */
+  private final static int MSG_BASE_TO_ACTIVITY = 50;
+  public final static int MSG_SHOW_MOTION_RECT = MSG_BASE_TO_ACTIVITY + 1;
 
   /**
    * Messages that sent from other parts of the core.
@@ -80,11 +88,11 @@ public class ProcessService extends Service {
             break;
 
           case MSG_MOTION_DETECTED:
-            Path path = (Path) msg.obj;
+            Rect rect = (Rect) msg.obj;
             if (Controller.logEnabled()) {
-              Log.d(LOG_TAG, "motion detected, path:" + path);
+              Log.d(LOG_TAG, "motion detected, path:" + rect);
             }
-            motionCallback(path);
+            motionCallback(rect);
             break;
 
         }
@@ -93,8 +101,15 @@ public class ProcessService extends Service {
     mMessengerFromActivityToService = new Messenger(mHandler);
   }
 
-  public void motionCallback(Path path) {
-
+  public void motionCallback(Rect rect) {
+    if (mMessengerFromServiceToActivity != null) {
+      try {
+        mMessengerFromServiceToActivity.send(Message.obtain(null, MSG_SHOW_MOTION_RECT, rect));
+      } catch (RemoteException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
   }
 
 }

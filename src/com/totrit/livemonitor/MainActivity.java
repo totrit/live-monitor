@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -67,6 +69,11 @@ public class MainActivity extends Activity {
    * The main view that the activity contains.
    */
   private MainView mSurfaceView = null;
+  
+  /**
+   * The decoration view that is used to show motion rect, etc.
+   */
+  private DecorationView mDecorationView = null;
 
   /**
    * The messenger that connects the activity with the service.
@@ -76,14 +83,21 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     setContentView(R.layout.activity_main);
+    // Add Camera Preview view.
     mSurfaceView = new MainView(this);
     mSurfaceView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
         LayoutParams.MATCH_PARENT));
     ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mSurfaceView);
+    // Add decoration view.
+    mDecorationView = new DecorationView(this);
+    mDecorationView.setBackgroundColor(Color.YELLOW);
+//    mDecorationView.getBackground().setAlpha(0);
+//    mDecorationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+//        LayoutParams.MATCH_PARENT));
+    ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mDecorationView);
 
-    setupHiderFeature();
+//    setupHiderFeature();
     mMessenger = new ServiceMessenger();
   }
 
@@ -273,7 +287,11 @@ public class MainActivity extends Activity {
     @Override
     public void handleMessage(Message msg) {
       switch (msg.what) {
-
+        case ProcessService.MSG_SHOW_MOTION_RECT:
+          Rect rect = (Rect) msg.obj;
+          mDecorationView.setAdditionalDrawingRect(rect);
+          mDecorationView.invalidate();
+          break;
       }
     }
   };
@@ -282,7 +300,8 @@ public class MainActivity extends Activity {
   Runnable mHideRunnable = new Runnable() {
     @Override
     public void run() {
-      mSystemUiHider.hide();
+      //TODO
+//      mSystemUiHider.hide();
     }
   };
 

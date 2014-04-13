@@ -5,18 +5,23 @@ import com.totrit.livemonitor.util.CameraManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class MainView extends SurfaceView {
-
+  private final static String LOG_TAG = "MainView";
   private final int mAttachedCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
   public MainView(Context context) {
     super(context);
     this.getHolder().addCallback(mSurfaceCallback);
-    // TODO Auto-generated constructor stub
   }
 
   SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
@@ -28,6 +33,7 @@ public class MainView extends SurfaceView {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+      setWillNotDraw(false);
       // CameraManager.getInstance().startPreview(getContext(), holder, getWidth(), getHeight());
     }
 
@@ -37,6 +43,7 @@ public class MainView extends SurfaceView {
       int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
       CameraManager.getInstance().startPreview(holder, mAttachedCameraId, rotation, width, height);
     }
+
   };
 
   public void onConfigurationChanged(Configuration newConfig) {
