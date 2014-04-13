@@ -30,7 +30,7 @@ JNIEXPORT jboolean JNICALL Java_com_totrit_livemonitor_util_ImageComparor_native
     JNIEnv* env, jobject thiz, jint imageHandle);
 
 JNIEXPORT jintArray JNICALL Java_com_totrit_livemonitor_util_ImageComparor_nativeDetectMotion(
-    JNIEnv* env, jobject thiz, jint baseHandle, jint targetHandle, jint sensitivity);
+    JNIEnv* env, jobject thiz, jint prePre, jint pre, jint current, jint sensitivity);
 
 #ifdef __cplusplus
 }
@@ -56,13 +56,14 @@ JNIEXPORT jboolean JNICALL Java_com_totrit_livemonitor_util_ImageComparor_native
   return true;
 }
 
-static int* detectMotion(const Mat *const base, const Mat *const target, int sensitivity);
+static int* detectMotion(const Mat *const prePre, const Mat *const pre, const Mat *const current, int sensitivity);
 static void rotateBy90(int *rect, int imageWidth, int imageHeight);
 JNIEXPORT jintArray JNICALL Java_com_totrit_livemonitor_util_ImageComparor_nativeDetectMotion(
-    JNIEnv* env, jobject thiz, jint baseHandle, jint targetHandle, jint sensitivity) {
-  Mat *base = reinterpret_cast<Mat*>(baseHandle);
-  Mat *target = reinterpret_cast<Mat*>(targetHandle);
-  int *rect = detectMotion(base, target, sensitivity);
+    JNIEnv* env, jobject thiz, jint prePre, jint pre, jint current, jint sensitivity) {
+  Mat *f0 = reinterpret_cast<Mat*>(current);
+  Mat *f1 = reinterpret_cast<Mat*>(pre);
+  Mat *f2 = reinterpret_cast<Mat*>(prePre);
+  int *rect = detectMotion(f2, f1, f0, sensitivity);
   if (rect != NULL) {
 //    rotateBy90(rect, base->cols, base->rows);
     jintArray result;
@@ -104,16 +105,18 @@ static int convertYUVDataToMat(void *data, int len, int width, int height) {
  * Given two images, get the motion rectangle.
  */
 static int analizePixelsForChanges(const Mat &diff, int &left, int &top, int &right, int &bottom, int maxDeviation);
-static int* detectMotion(const Mat *const base, const Mat *const target, int sensitivity) {
+int* detectMotion(const Mat *const prePre, const Mat *const pre, const Mat *const current, int sensitivity) {
   //TODO
   int motionThreshold = 5;
   int maxDeviation = 60;
   int arg1ForThresholdFunc = 35;
   int arg2ForThresholdFunc = 255;
-  int left = 0, top = 0, right = base->cols, bottom = base->rows;
+  int left = 0, top = 0, right = current->cols, bottom = current->rows;
   Mat kernel_ero = getStructuringElement(MORPH_RECT, Size(2,2));
-  Mat diff;
-  absdiff(*base, *target, diff);
+  Mat diff1, diff2, diff;
+  absdiff(*prePre, *current, diff1);
+  absdiff(*pre, *current, diff2);
+  bitwise_and(diff1, diff2, diff);
   threshold(diff, diff, arg1ForThresholdFunc, arg2ForThresholdFunc, CV_THRESH_BINARY);
   erode(diff, diff, kernel_ero);
 //  imwrite("/sdcard/erode.png", diff);

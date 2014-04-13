@@ -93,7 +93,6 @@ public class MainActivity extends Activity {
     ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mSurfaceView);
     // Add decoration view.
     mDecorationView = new DecorationView(this);
-//    mDecorationView.getBackground().setAlpha(0);
     mDecorationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
         LayoutParams.MATCH_PARENT));
     ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mDecorationView);

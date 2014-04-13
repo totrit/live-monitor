@@ -3,7 +3,6 @@ package com.totrit.livemonitor.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.lang.ref.SoftReference;
 import java.util.LinkedList;
 
 import com.totrit.livemonitor.util.CameraManager;
@@ -13,10 +12,7 @@ import com.totrit.livemonitor.util.ImageComparor;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.ImageFormat;
-import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.os.Handler;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
@@ -31,7 +27,11 @@ public class MotionDetector {
 
   private Handler mHandler = new PrivateHandler();
   private final static int INVALID_IMAGE_HANDLE = -1;
-  private int mBaseImageHandle = INVALID_IMAGE_HANDLE;
+  /**
+   * Used to store the history frames to detect motion.
+   *    Currently it has two frames, frame_0 is more latest, and frame_1 is more elder.
+   */
+  private int[] mNeighborFrames = new int[2];
   private int mSensitivity = 0;
   private Messenger mMessengerToService = null;
   private int mCameraId = -1;
@@ -47,6 +47,9 @@ public class MotionDetector {
     mCameraId = cameraId;
     mSensitivity = sensitivity;
     mMessengerToService = callbackMessenger;
+    for (int i = 0, count = mNeighborFrames.length; i < count; i ++) {
+      mNeighborFrames[i] = INVALID_IMAGE_HANDLE;
+    }
     registerCallbacks();
   }
 
@@ -74,12 +77,14 @@ public class MotionDetector {
       switch (msg.what) {
         case MSG_CAPTURE_DONE:
           int capturedImageNativeHandle = msg.arg1;
-          if (mBaseImageHandle == INVALID_IMAGE_HANDLE && capturedImageNativeHandle != INVALID_IMAGE_HANDLE) {
-            mBaseImageHandle = capturedImageNativeHandle;
-          } else if (mBaseImageHandle != INVALID_IMAGE_HANDLE && capturedImageNativeHandle != INVALID_IMAGE_HANDLE){
-            Rect result = ImageComparor.getInstance().compare(mBaseImageHandle, capturedImageNativeHandle, mSensitivity);
-            //TODO
-            ImageComparor.getInstance().releaseLocalImage(capturedImageNativeHandle);
+          if ((mNeighborFrames[0] == INVALID_IMAGE_HANDLE || mNeighborFrames[1] == INVALID_IMAGE_HANDLE) && capturedImageNativeHandle != INVALID_IMAGE_HANDLE) {
+            mNeighborFrames[1] = mNeighborFrames[0];
+            mNeighborFrames[0] = capturedImageNativeHandle;
+          } else if (mNeighborFrames[0] != INVALID_IMAGE_HANDLE && mNeighborFrames[1] != INVALID_IMAGE_HANDLE && capturedImageNativeHandle != INVALID_IMAGE_HANDLE){
+            Rect result = ImageComparor.getInstance().compare(mNeighborFrames[1], mNeighborFrames[0], capturedImageNativeHandle, mSensitivity);
+            ImageComparor.getInstance().releaseLocalImage(mNeighborFrames[1]);
+            mNeighborFrames[1] = mNeighborFrames[0];
+            mNeighborFrames[0] = capturedImageNativeHandle;
             if (result != null) {
               if (Controller.logEnabled()) {
                 Log.d(LOG_TAG, "motion detected by Motion Detector, send message to service.");
@@ -128,11 +133,12 @@ public class MotionDetector {
   public void destroy() {
     mStoped = true;
     mHandler = null;
-    //TODO: If other handle maintained, release them also.
-    if (mBaseImageHandle != INVALID_IMAGE_HANDLE) {
-      ImageComparor.getInstance().releaseLocalImage(mBaseImageHandle);
+    for (int i = 0, count = mNeighborFrames.length; i < count; i ++) {
+      if (mNeighborFrames[i] != INVALID_IMAGE_HANDLE) {
+        ImageComparor.getInstance().releaseLocalImage(mNeighborFrames[i]);
+        mNeighborFrames[i] = INVALID_IMAGE_HANDLE;
+      }
     }
-    mBaseImageHandle = INVALID_IMAGE_HANDLE;
     mMessengerToService = null;
   }
 

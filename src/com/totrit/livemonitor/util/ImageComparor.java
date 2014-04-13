@@ -30,8 +30,8 @@ public class ImageComparor {
     }
   }
 
-  public Rect compare(int baseHandle, int targetHandle, int sensitivity) {
-    int[] rect = nativeDetectMotion(baseHandle, targetHandle, sensitivity);
+  public Rect compare(int prePre, int pre, int current, int sensitivity) {
+    int[] rect = nativeDetectMotion(prePre, pre, current, sensitivity);
     if (rect != null && rect.length == 4) {
       Rect ret = new Rect(rect[0], rect[1], rect[2], rect[3]);
       Log.d(LOG_TAG, "compare got result: " + ret.toString());
@@ -52,5 +52,5 @@ public class ImageComparor {
   
   private native int nativeConvertYUVImageToLocalImage(byte[] imageData, int len, int imageWidth, int imageHeight);
   private native boolean nativeReleaseLocalImage(int localImageHandle);
-  private native int[] nativeDetectMotion(int baseHandle, int targetHandle, int sensitivity);
+  private native int[] nativeDetectMotion(int prePre, int pre, int current, int sensitivity);
 }

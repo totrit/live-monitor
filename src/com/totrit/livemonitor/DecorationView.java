@@ -12,6 +12,8 @@ import android.graphics.Rect;
 import android.graphics.Paint.Style;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -21,15 +23,27 @@ public class DecorationView extends View {
   //TODO
   private final int mAttachedCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
   private RectDrawer mDrawer = new RectDrawer();
+  private final static int MSG_AUTO_CLEAR_RECT = 0;
+  private final static int TIME_MILLIS_THEN_CLEAR_RECT = 2 * 1000;
 
   public DecorationView(Context context) {
     super(context);
   }
   
+  private Handler mInternalHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case MSG_AUTO_CLEAR_RECT:
+          mDrawer.setRect(null);
+          break;
+      }
+    }
+  };
   
   @Override
   protected void onDraw(Canvas canvas){
-//    super.onDraw(canvas);
+    super.onDraw(canvas);
     mDrawer.draw(canvas);
   }
 
@@ -52,6 +66,11 @@ public class DecorationView extends View {
     
     public void setRect(Rect rect) {
       mAdditionalRectToDraw = rect;
+      DecorationView.this.postInvalidate();
+      if (rect == null) {
+        return;
+      }
+      mInternalHandler.removeMessages(MSG_AUTO_CLEAR_RECT);
       mMatrix.reset();
       int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
       Size previewSize = CameraManager.getInstance().getPreviewSize(mAttachedCameraId);
@@ -84,6 +103,7 @@ public class DecorationView extends View {
           mMatrix.postTranslate(DecorationView.this.getWidth(), DecorationView.this.getHeight());
           break;
       }
+      mInternalHandler.sendEmptyMessageDelayed(MSG_AUTO_CLEAR_RECT, TIME_MILLIS_THEN_CLEAR_RECT);
 //      Log.d(LOG_TAG, "calculate scale = (" + hScale + ", " + vScale + "), rotation = " + degrees);
       Log.d(LOG_TAG, "matrix after set: " + mMatrix);
     }
