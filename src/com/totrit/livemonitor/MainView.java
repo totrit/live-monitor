@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,16 @@ public class MainView extends SurfaceView {
 
   public MainView(Context context) {
     super(context);
+    this.getHolder().addCallback(mSurfaceCallback);
+  }
+  
+  public MainView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    this.getHolder().addCallback(mSurfaceCallback);
+  }
+  
+  public MainView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
     this.getHolder().addCallback(mSurfaceCallback);
   }
 

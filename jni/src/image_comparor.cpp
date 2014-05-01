@@ -63,6 +63,9 @@ JNIEXPORT jintArray JNICALL Java_com_totrit_livemonitor_util_ImageComparor_nativ
   Mat *f0 = reinterpret_cast<Mat*>(current);
   Mat *f1 = reinterpret_cast<Mat*>(pre);
   Mat *f2 = reinterpret_cast<Mat*>(prePre);
+  if (!(f0->size() == f1->size() && f1->size() == f2->size())) {
+    return NULL;
+  }
   int *rect = detectMotion(f2, f1, f0, sensitivity);
   if (rect != NULL) {
 //    rotateBy90(rect, base->cols, base->rows);

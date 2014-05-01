@@ -2,7 +2,6 @@ package com.totrit.livemonitor.util;
 
 import org.opencv.android.OpenCVLoader;
 
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.util.Log;
 

@@ -14,6 +14,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.os.Handler;
 import android.os.Message;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -28,6 +29,14 @@ public class DecorationView extends View {
 
   public DecorationView(Context context) {
     super(context);
+  }
+  
+  public DecorationView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+  
+  public DecorationView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
   }
   
   private Handler mInternalHandler = new Handler() {
@@ -119,4 +128,5 @@ public class DecorationView extends View {
       canvas.restore();
     }
   }
+  
 }

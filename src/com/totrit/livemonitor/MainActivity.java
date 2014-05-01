@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
@@ -27,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e. status bar and
@@ -80,23 +81,20 @@ public class MainActivity extends Activity {
    * The messenger that connects the activity with the service.
    */
   ServiceMessenger mMessenger = null;
+  
+  /**
+   * Manage the UI controls' state, etc.
+   */
+  private ControlsGroup mUIControlls = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.activity_main);
-    // Add Camera Preview view.
-    mSurfaceView = new MainView(this);
-    mSurfaceView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-        LayoutParams.MATCH_PARENT));
-    ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mSurfaceView);
-    // Add decoration view.
-    mDecorationView = new DecorationView(this);
-    mDecorationView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-        LayoutParams.MATCH_PARENT));
-    ((ViewGroup) findViewById(R.id.fullscreen_content_controls)).addView(mDecorationView);
-
+    mSurfaceView = (MainView)findViewById(R.id.mainView);
+    mDecorationView = (DecorationView)findViewById(R.id.decorationView);
+    mUIControlls = new ControlsGroup();
 //    setupHiderFeature();
     mMessenger = new ServiceMessenger();
   }
@@ -104,7 +102,7 @@ public class MainActivity extends Activity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_ALL));
+    mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_RELEASE_ALL));
     mMessenger.releaseConnection();
   }
 
@@ -232,6 +230,27 @@ public class MainActivity extends Activity {
       unbindService(mServiceConnection);
     }
 
+  }
+  
+  private class ControlsGroup {
+    private Button mBtnRecord = null;
+    private boolean mBtnRecordState = false;
+
+    public ControlsGroup() {
+      mBtnRecord = (Button) findViewById(R.id.btnRecord);
+      mBtnRecord.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          if (!mBtnRecordState) {
+            mBtnRecord.setText(R.string.btn_record_on_text);
+            mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD));
+          } else {
+            mBtnRecord.setText(R.string.btn_record_off_text);
+            mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_RECORD));
+          }
+          mBtnRecordState = !mBtnRecordState;
+        }
+      });
+    }
   }
 
   @Override

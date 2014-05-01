@@ -4,7 +4,6 @@ import com.totrit.livemonitor.util.Controller;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -23,8 +22,9 @@ public class ProcessService extends Service {
    */
   private final static int MSG_BASE_FROM_ACTIVITY = 0;
   public final static int MSG_START_OBSERVE_PREVIEW = MSG_BASE_FROM_ACTIVITY + 1;
-  public final static int MSG_START_DETECT_AND_RECORD = MSG_BASE_FROM_ACTIVITY + 2;
-  public final static int MSG_STOP_ALL = MSG_BASE_FROM_ACTIVITY + 3;
+  public final static int MSG_START_RECORD = MSG_BASE_FROM_ACTIVITY + 2;
+  public final static int MSG_STOP_RECORD = MSG_BASE_FROM_ACTIVITY + 3;
+  public final static int MSG_RELEASE_ALL = MSG_BASE_FROM_ACTIVITY + 4;
   
   /**
    * Messages that sent to Activities, who are responsible to define the handling procedure.
@@ -72,12 +72,12 @@ public class ProcessService extends Service {
                 new MotionDetector(msg.arg1, msg.arg2, mMessengerFromActivityToService);
             break;
 
-          case MSG_START_DETECT_AND_RECORD:
+          case MSG_START_RECORD:
             // TODO
             mMessengerFromServiceToActivity = (Messenger) msg.replyTo;
             break;
 
-          case MSG_STOP_ALL:
+          case MSG_RELEASE_ALL:
             if (mMotionDetector != null) {
               mMotionDetector.destroy();
               mMotionDetector = null;

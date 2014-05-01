@@ -5,21 +5,34 @@
     android:background="#0099cc"
     tools:context=".MainActivity" >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true" >
+     <RelativeLayout
+         android:id="@+id/fullscreen_content_controls"
+         android:visibility="gone"
+         style="?buttonBarStyle"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_gravity="bottom|center_horizontal"
+         android:background="@color/black_overlay"
+         android:orientation="horizontal"
+         tools:ignore="UselessParent" >
+     </RelativeLayout>
+     
+     <com.totrit.livemonitor.MainView
+         android:id="@+id/mainView"
+     	android:layout_width="match_parent"
+     	android:layout_height="match_parent"/>
+     
+     <com.totrit.livemonitor.DecorationView
+         android:id="@+id/decorationView"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" />
 
-        <RelativeLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?buttonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent" >
-        </RelativeLayout>
-    </FrameLayout>
+     <Button
+         android:id="@+id/btnRecord"
+         android:layout_gravity="bottom|center_horizontal"
+         android:layout_marginBottom="1dip"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/btn_record_off_text" />
 
 </FrameLayout>
