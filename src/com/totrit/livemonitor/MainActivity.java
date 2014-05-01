@@ -242,7 +242,7 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
           if (!mBtnRecordState) {
             mBtnRecord.setText(R.string.btn_record_on_text);
-            mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD));
+            mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD, Camera.CameraInfo.CAMERA_FACING_BACK, 0));
           } else {
             mBtnRecord.setText(R.string.btn_record_off_text);
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_RECORD));

@@ -43,6 +43,7 @@ public class ProcessService extends Service {
   private Messenger mMessengerFromServiceToActivity = null;
   private Phase mPhase = Phase.PHASE_NONE;
   private MotionDetector mMotionDetector = null;
+  private VideoRecorder mVideoRecorder = null;
 
   private enum Phase {
     PHASE_NONE, PHASE_PREVIEWING, PHASE_DETECTING, PHASE_RECORDING
@@ -73,8 +74,22 @@ public class ProcessService extends Service {
             break;
 
           case MSG_START_RECORD:
-            // TODO
             mMessengerFromServiceToActivity = (Messenger) msg.replyTo;
+            if (Controller.logEnabled()) {
+              Log.d(LOG_TAG, "start to record camera-id: " + msg.arg1);
+            }
+            mVideoRecorder = new VideoRecorder(msg.arg1);
+            mVideoRecorder.startRecord();
+            break;
+            
+          case MSG_STOP_RECORD:
+            if (mVideoRecorder != null) {
+              if (Controller.logEnabled()) {
+                Log.d(LOG_TAG, "stop recording.");
+              }
+              mVideoRecorder.stopRecord();
+              mVideoRecorder = null;
+            }
             break;
 
           case MSG_RELEASE_ALL:
@@ -93,6 +108,9 @@ public class ProcessService extends Service {
               Log.d(LOG_TAG, "motion detected, path:" + rect);
             }
             motionCallback(rect);
+            if (mVideoRecorder != null) {
+              mVideoRecorder.notifyChange();
+            }
             break;
 
         }

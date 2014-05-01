@@ -1,5 +1,8 @@
 package com.totrit.livemonitor.util;
 
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
@@ -9,6 +12,8 @@ import java.util.List;
 
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -18,7 +23,9 @@ public class CameraManager {
   private static CameraManager mInstance = null;
   private static final int mCameraQuality = 90;
 
-  private Hashtable<Integer, Camera> mCameras = new Hashtable<Integer, Camera>();
+  private Hashtable<Integer, Camera> mCameras = new Hashtable<Integer, Camera>(2);
+  private Hashtable<Integer, MediaRecorder> mRecorders = new Hashtable<Integer, MediaRecorder>(2);
+  private Hashtable<Integer, SurfaceHolder> mPreviews = new Hashtable<Integer, SurfaceHolder>(2);
   private Hashtable<Integer, SoftReference<Camera.Parameters>> mCamerasParams = new Hashtable<Integer, SoftReference<Camera.Parameters>>();
 
   public static CameraManager getInstance() {
@@ -35,6 +42,7 @@ public class CameraManager {
     try {
       assert (holder != null);
       camera.setPreviewDisplay(holder);
+      mPreviews.put(cameraId, holder);
       // Set Width and Height.
       Camera.Size previewSize = getOptimalPreviewSize(cameraId, width, height);
       if (Controller.logEnabled()) {
@@ -130,6 +138,134 @@ public class CameraManager {
       return null;
     }
   }
+  
+  /**
+   * Record video to file
+   * 
+   * @param cameraId The camera to use.
+   * @param savePath The file path to save the video.
+   * @param isAppend Whether use append mode when manapulating the video file.
+   * @return true for success, or return false.
+   */
+  public boolean startRecord(int cameraId, String savePath, boolean isAppend) {
+    Camera camera = mCameras.get(cameraId);
+    if (camera == null) {
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "camera instance not initialized, can not record video.");
+        return false;
+      }
+    }
+    MediaRecorder recorder = mRecorders.get(cameraId);
+    if (recorder != null) {
+      if (isAppend) {
+        if (Controller.logEnabled()) {
+          Log.d(LOG_TAG, "already recording, don't need to resume recording.");
+        }
+        return true;
+      }
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "there is an existing media-recorder, and then want to record again, illeagal, but anyway go on with it.");
+      }
+      destroyMediaRecorder(recorder);
+      recorder = null;
+    }
+    // Step 1: Unlock and set camera to MediaRecorder
+    camera.unlock();
+    recorder = new MediaRecorder();
+    recorder.setCamera(camera);
+    
+    // Step 2: Set sources
+    recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+    recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+    
+    // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
+    recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+    
+    // Step 4: Set output file
+    //TODO: want to append to a previous video file after pause.
+    recorder.setOutputFile(getDestVideoFileDesc(savePath));
+
+    // Step 5: Set the preview output
+//    recorder.setPreviewDisplay(mPreviews.get(cameraId).getSurface());
+
+    // Step 6: Prepare configured MediaRecorder
+    try {
+      recorder.prepare();
+    } catch (IllegalStateException e) {
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
+      }
+      destroyMediaRecorder(recorder);
+      return false;
+    } catch (IOException e) {
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "IOException preparing MediaRecorder: " + e.getMessage());
+      }
+      destroyMediaRecorder(recorder);
+      return false;
+    }
+    
+    // Step 7: Start recording
+    try {
+      recorder.start();
+    } catch (IllegalStateException e) {
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "IllegalStateException starting MediaRecorder: " + e.getMessage());
+      }
+      destroyMediaRecorder(recorder);
+      return false;
+    }
+    
+    // Add the new recorder to table.
+    mRecorders.put(cameraId, recorder);
+    return true;
+  }
+  
+  public boolean stopRecord(int cameraId) {
+    MediaRecorder recorder = mRecorders.get(cameraId);
+    if (recorder != null) {
+      try {
+        recorder.stop();
+      } catch (IllegalStateException e) {
+        if (Controller.logEnabled()) {
+          Log.d(LOG_TAG, "IllegalStateException stopping MediaRecorder: " + e.getMessage());
+        }
+        destroyMediaRecorder(recorder);
+        return false;
+      }
+      destroyMediaRecorder(recorder);
+      mRecorders.remove(cameraId);
+      mCameras.get(cameraId).lock();
+    }
+    return true;
+  }
+  
+  private void destroyMediaRecorder(MediaRecorder recorder) {
+    if (recorder != null) {
+      recorder.reset();
+      recorder.release();
+    }
+  }
+  
+  private FileDescriptor getDestVideoFileDesc(String videoPath) {
+    FileOutputStream out;
+    try {
+      // TODO: will this handle be released later?
+      out = new FileOutputStream(videoPath);
+      return out.getFD();
+    } catch (FileNotFoundException e) {
+      if (Controller.logEnabled()) {
+        e.printStackTrace();
+      }
+      return null;
+    } catch (IOException e) {
+      if (Controller.logEnabled()) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+    
+  }
 
 //  public boolean takePicture(int cameraId, Camera.PictureCallback callback) {
 //    Camera camera = mCameras.get(cameraId);
@@ -162,6 +298,9 @@ public class CameraManager {
   public void stopPreview(int cameraId) {
     Camera camera = mCameras.get(cameraId);
     if (camera != null) {
+      destroyMediaRecorder(mRecorders.get(cameraId));
+      mRecorders.remove(cameraId);
+      mPreviews.remove(cameraId);
       camera.stopPreview();
     } else {
       if (Controller.logEnabled()) {
@@ -173,6 +312,9 @@ public class CameraManager {
   public void releaseCarema(int cameraId) {
     Camera camera = mCameras.get(cameraId);
     if (camera != null) {
+      destroyMediaRecorder(mRecorders.get(cameraId));
+      mRecorders.remove(cameraId);
+      mPreviews.remove(cameraId);
       camera.release();
       mCameras.remove(cameraId);
       camera = null;
