@@ -67,6 +67,10 @@ public class MotionDetector {
     }
     CameraManager.getInstance().registerPreviewCallback(mCameraId, mPreviewCallback, mPreviewBuffers);
   }
+  
+  public void restartWhenPreviewSettingChanged() {
+    registerCallbacks();
+  }
 
   @SuppressLint("HandlerLeak")
   private class PrivateHandler extends Handler {

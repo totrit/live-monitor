@@ -6,5 +6,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="btn_record_on_text">停止录制</string>
     <string name="btn_record_off_text">开始录制</string>
+    <string name="tip_no_rotation_when_recording">当录制时不会跟随系统自动旋转屏幕</string>
 
 </resources>

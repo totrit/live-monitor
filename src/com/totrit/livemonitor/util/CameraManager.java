@@ -10,6 +10,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.totrit.livemonitor.core.ProcessService;
+
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -40,6 +42,8 @@ public class CameraManager {
     startCamera(cameraId);
     Camera camera = mCameras.get(cameraId);
     try {
+      // Stop the previous preview first.
+      camera.stopPreview();
       assert (holder != null);
       camera.setPreviewDisplay(holder);
       mPreviews.put(cameraId, holder);
@@ -71,6 +75,9 @@ public class CameraManager {
       e.printStackTrace();
     } catch (RuntimeException e) {
       e.printStackTrace();
+    }
+    if (ProcessService.getInstance() != null) {
+      ProcessService.getInstance().previewMaybeChanged();
     }
   }
 
@@ -144,9 +151,10 @@ public class CameraManager {
    * 
    * @param cameraId The camera to use.
    * @param savePath The file path to save the video.
-   * @param isAppend Whether use append mode when manapulating the video file.
+   * @param isAppend Whether use append mode when manipulating the video file.
    * @return true for success, or return false.
    */
+  // TODO: append functionality not completed.
   public boolean startRecord(int cameraId, String savePath, boolean isAppend) {
     Camera camera = mCameras.get(cameraId);
     if (camera == null) {
@@ -196,12 +204,20 @@ public class CameraManager {
         Log.d(LOG_TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
       }
       destroyMediaRecorder(recorder);
+      // Camera.unlock() may let the previously set preview-call-back out of function, notify ProcessSerivce to redo the register.
+      if (ProcessService.getInstance() != null) {
+        ProcessService.getInstance().previewMaybeChanged();
+      }
       return false;
     } catch (IOException e) {
       if (Controller.logEnabled()) {
         Log.d(LOG_TAG, "IOException preparing MediaRecorder: " + e.getMessage());
       }
       destroyMediaRecorder(recorder);
+      // Camera.unlock() may let the previously set preview-call-back out of function, notify ProcessSerivce to redo the register.
+      if (ProcessService.getInstance() != null) {
+        ProcessService.getInstance().previewMaybeChanged();
+      }
       return false;
     }
     
@@ -213,11 +229,19 @@ public class CameraManager {
         Log.d(LOG_TAG, "IllegalStateException starting MediaRecorder: " + e.getMessage());
       }
       destroyMediaRecorder(recorder);
+      // Camera.unlock() may let the previously set preview-call-back out of function, notify ProcessSerivce to redo the register.
+      if (ProcessService.getInstance() != null) {
+        ProcessService.getInstance().previewMaybeChanged();
+      }
       return false;
     }
     
     // Add the new recorder to table.
     mRecorders.put(cameraId, recorder);
+    // Camera.unlock() may let the previously set preview-call-back out of function, notify ProcessSerivce to redo the register.
+    if (ProcessService.getInstance() != null) {
+      ProcessService.getInstance().previewMaybeChanged();
+    }
     return true;
   }
   
@@ -330,7 +354,10 @@ public class CameraManager {
     if (camera != null) {
       return true;
     }
-    camera = Camera.open();
+    try {
+      camera = Camera.open();
+    } catch (RuntimeException ignore) {
+    }
     if (camera == null) {
       if (Controller.logEnabled()) {
         Log.e(LOG_TAG, "open camera failed...");

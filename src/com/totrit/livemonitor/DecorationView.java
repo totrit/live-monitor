@@ -113,7 +113,6 @@ public class DecorationView extends View {
           break;
       }
       mInternalHandler.sendEmptyMessageDelayed(MSG_AUTO_CLEAR_RECT, TIME_MILLIS_THEN_CLEAR_RECT);
-//      Log.d(LOG_TAG, "calculate scale = (" + hScale + ", " + vScale + "), rotation = " + degrees);
       Log.d(LOG_TAG, "matrix after set: " + mMatrix);
     }
     

@@ -44,7 +44,10 @@ public class ProcessService extends Service {
   private Phase mPhase = Phase.PHASE_NONE;
   private MotionDetector mMotionDetector = null;
   private VideoRecorder mVideoRecorder = null;
-
+  
+  // For the convenience of communicating with other classes from core, let them visit ProcessService through this singleton.
+  private static ProcessService mInstance = null;
+  
   private enum Phase {
     PHASE_NONE, PHASE_PREVIEWING, PHASE_DETECTING, PHASE_RECORDING
   }
@@ -53,7 +56,12 @@ public class ProcessService extends Service {
   public IBinder onBind(Intent intent) {
     // TODO Auto-generated method stub
     init();
+    mInstance = this;
     return mMessengerFromActivityToService.getBinder();
+  }
+  
+  public static ProcessService getInstance() {
+    return mInstance;
   }
 
   private void init() {
@@ -109,7 +117,7 @@ public class ProcessService extends Service {
             }
             motionCallback(rect);
             if (mVideoRecorder != null) {
-              mVideoRecorder.notifyChange();
+              mVideoRecorder.notifyMotionDetected();
             }
             break;
 
@@ -119,7 +127,7 @@ public class ProcessService extends Service {
     mMessengerFromActivityToService = new Messenger(mHandler);
   }
 
-  public void motionCallback(Rect rect) {
+  private void motionCallback(Rect rect) {
     if (mMessengerFromServiceToActivity != null) {
       try {
         mMessengerFromServiceToActivity.send(Message.obtain(null, MSG_SHOW_MOTION_RECT, rect));
@@ -127,6 +135,12 @@ public class ProcessService extends Service {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    }
+  }
+  
+  public void previewMaybeChanged() {
+    if (mMotionDetector != null) {
+      mMotionDetector.restartWhenPreviewSettingChanged();
     }
   }
 

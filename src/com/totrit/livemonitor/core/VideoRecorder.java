@@ -23,14 +23,16 @@ public class VideoRecorder {
   
   public void startRecord() {
     CameraManager.getInstance().startRecord(mCameraId, getOutputMediaFile(true), false);
+    mHandler.startTimerToStopRecord();
   }
   
   public void stopRecord() {
     CameraManager.getInstance().stopRecord(mCameraId);
   }
   
-  public void notifyChange() {
-    mHandler.notifyChange();
+  public void notifyMotionDetected() {
+    resumeRecord();
+    mHandler.startTimerToStopRecord();
   }
   
   private void pauseRecord() {
@@ -38,7 +40,6 @@ public class VideoRecorder {
   }
   
   private void resumeRecord() {
-    // TODO: append
     CameraManager.getInstance().startRecord(mCameraId, getOutputMediaFile(true), true);
   }
   
@@ -93,8 +94,7 @@ public class VideoRecorder {
       }
     }
     
-    public void notifyChange() {
-      resumeRecord();
+    public void startTimerToStopRecord() {
       this.removeMessages(MSG_DELAYED_PAUSE_IF_NO_PREVIEW_CHANGE);
       this.sendMessageDelayed(Message.obtain(null, MSG_DELAYED_PAUSE_IF_NO_PREVIEW_CHANGE), PAUSE_AFTER_NO_PREVIEW_CHANGE);
     }

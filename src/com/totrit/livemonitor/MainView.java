@@ -39,7 +39,6 @@ public class MainView extends SurfaceView {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-      setWillNotDraw(false);
       // CameraManager.getInstance().startPreview(getContext(), holder, getWidth(), getHeight());
     }
 

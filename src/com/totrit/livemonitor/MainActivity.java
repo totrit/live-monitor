@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -64,8 +65,6 @@ public class MainActivity extends Activity {
    * The instance of the {@link SystemUiHider} for this activity.
    */
   private SystemUiHider mSystemUiHider;
-
-  private static final int MSG_TEST = 100;
 
   /**
    * The main view that the activity contains.
@@ -175,8 +174,6 @@ public class MainActivity extends Activity {
       @Override
       public void onServiceConnected(ComponentName name, IBinder service) {
         mMessengerFromActivityToService = new Messenger(service);
-        mPrimeHandler.sendMessageDelayed(Message.obtain(mPrimeHandler, MSG_TEST, 0, 0), 5 * 1000);
-        // TODO test
         mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_OBSERVE_PREVIEW,
             Camera.CameraInfo.CAMERA_FACING_BACK, 50));
       }
@@ -243,9 +240,14 @@ public class MainActivity extends Activity {
           if (!mBtnRecordState) {
             mBtnRecord.setText(R.string.btn_record_on_text);
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD, Camera.CameraInfo.CAMERA_FACING_BACK, 0));
+            // Stop from rotating when recording, because the video will be corrupted if resolution changed during recording.
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+            Toast.makeText(MainActivity.this, R.string.tip_no_rotation_when_recording, Toast.LENGTH_SHORT).show();
           } else {
             mBtnRecord.setText(R.string.btn_record_off_text);
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_RECORD));
+            // Restore auto rotating when recording finished.
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
           }
           mBtnRecordState = !mBtnRecordState;
         }
