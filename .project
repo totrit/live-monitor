@@ -31,11 +31,4 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>opencv-src</name>
-			<type>2</type>
-			<location>/home/totrit/software/installess/OpenCV-2.4.8-android-sdk/sdk/java/src</location>
-		</link>
-	</linkedResources>
 </projectDescription>

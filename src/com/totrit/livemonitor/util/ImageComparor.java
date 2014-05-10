@@ -33,10 +33,14 @@ public class ImageComparor {
     int[] rect = nativeDetectMotion(prePre, pre, current, sensitivity);
     if (rect != null && rect.length == 4) {
       Rect ret = new Rect(rect[0], rect[1], rect[2], rect[3]);
-      Log.d(LOG_TAG, "compare got result: " + ret.toString());
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "compare got result: " + ret.toString());
+      }
       return ret;
     } else {
-      Log.d(LOG_TAG, "native compare return null");
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "native compare return null");
+      }
       return null;
     }
   }

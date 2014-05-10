@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
@@ -239,12 +240,14 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
           if (!mBtnRecordState) {
             mBtnRecord.setText(R.string.btn_record_on_text);
+            mBtnRecord.setTextColor(getResources().getColor(R.color.hint_color_recording));
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD, Camera.CameraInfo.CAMERA_FACING_BACK, 0));
             // Stop from rotating when recording, because the video will be corrupted if resolution changed during recording.
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             Toast.makeText(MainActivity.this, R.string.tip_no_rotation_when_recording, Toast.LENGTH_SHORT).show();
           } else {
             mBtnRecord.setText(R.string.btn_record_off_text);
+            mBtnRecord.setTextColor(getResources().getColor(R.color.hint_color_not_recording));
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_RECORD));
             // Restore auto rotating when recording finished.
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);

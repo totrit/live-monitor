@@ -105,6 +105,13 @@ public class ProcessService extends Service {
               mMotionDetector.destroy();
               mMotionDetector = null;
             }
+            if (mVideoRecorder != null) {
+              if (Controller.logEnabled()) {
+                Log.d(LOG_TAG, "stop recording.");
+              }
+              mVideoRecorder.stopRecord();
+              mVideoRecorder = null;
+            }
             mHandler = null;
             mMessengerFromServiceToActivity = null;
             mMessengerFromActivityToService = null;

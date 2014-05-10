@@ -1,6 +1,7 @@
 package com.totrit.livemonitor;
 
 import com.totrit.livemonitor.util.CameraManager;
+import com.totrit.livemonitor.util.Controller;
 
 import android.app.Activity;
 import android.content.Context;
@@ -113,7 +114,9 @@ public class DecorationView extends View {
           break;
       }
       mInternalHandler.sendEmptyMessageDelayed(MSG_AUTO_CLEAR_RECT, TIME_MILLIS_THEN_CLEAR_RECT);
-      Log.d(LOG_TAG, "matrix after set: " + mMatrix);
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "matrix after set: " + mMatrix);
+      }
     }
     
     public void draw(Canvas canvas) {
@@ -123,7 +126,9 @@ public class DecorationView extends View {
       canvas.save();
       canvas.concat(mMatrix);
       canvas.drawRect(mAdditionalRectToDraw, mPaint);
-      Log.d(LOG_TAG, "RectDrawer is drawing rect: " + mAdditionalRectToDraw + ", with matrix " + mMatrix);
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "RectDrawer is drawing rect: " + mAdditionalRectToDraw + ", with matrix " + mMatrix);
+      }
       canvas.restore();
     }
   }

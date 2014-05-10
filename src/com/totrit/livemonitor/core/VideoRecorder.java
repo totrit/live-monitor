@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.totrit.livemonitor.R;
 import com.totrit.livemonitor.util.CameraManager;
 import com.totrit.livemonitor.util.Controller;
 
@@ -53,7 +54,7 @@ public class VideoRecorder {
     // using Environment.getExternalStorageState() before doing this.
     File mediaStorageDir =
         new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
-            "LiveMonitor");
+            "MotionRecorder");
     // This location works best if you want the created images to be shared
     // between applications and persist after your app has been uninstalled.
 

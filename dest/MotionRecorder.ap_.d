@@ -1,0 +1,20 @@
+/home/totrit/workspace/LiveMonitor/dest/MotionRecorder.ap_ \
+ : /home/totrit/software/installess/OpenCV-2.4.8-android-sdk/sdk/java/res/values/attrs.xml \
+/home/totrit/workspace/LiveMonitor/res/layout/activity_main.xml \
+/home/totrit/workspace/LiveMonitor/res/drawable-mdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/res/drawable-ldpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/res/values-v11/styles.xml \
+/home/totrit/workspace/LiveMonitor/res/drawable-xxhdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/res/values-v14/styles.xml \
+/home/totrit/workspace/LiveMonitor/res/drawable-hdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/res/drawable-xhdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/res/values/strings.xml \
+/home/totrit/workspace/LiveMonitor/res/values/attrs.xml \
+/home/totrit/workspace/LiveMonitor/res/values/styles.xml \
+/home/totrit/workspace/LiveMonitor/res/values/colors.xml \
+/home/totrit/workspace/LiveMonitor/dest/res/drawable-mdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/dest/res/drawable-ldpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/dest/res/drawable-xxhdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/dest/res/drawable-hdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/dest/res/drawable-xhdpi/ic_launcher.png \
+/home/totrit/workspace/LiveMonitor/dest/AndroidManifest.xml \
