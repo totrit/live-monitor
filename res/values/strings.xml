@@ -7,5 +7,8 @@
     <string name="btn_record_on_text">Stop</string>
     <string name="btn_record_off_text">Start</string>
     <string name="tip_no_rotation_when_recording">screen will NOT rotate when recording</string>
+    <string name="video_list_row_image_desc">nothing</string>
+    <!-- menus -->
+    <string name="open_video_list">Videos...</string>
 
 </resources>

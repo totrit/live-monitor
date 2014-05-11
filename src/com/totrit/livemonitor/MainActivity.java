@@ -23,6 +23,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,13 +94,50 @@ public class MainActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
+    //TODO don't hide the title, because option menu is triggered through the title.
+//    requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.activity_main);
     mSurfaceView = (MainView)findViewById(R.id.mainView);
     mDecorationView = (DecorationView)findViewById(R.id.decorationView);
     mUIControlls = new ControlsGroup();
 //    setupHiderFeature();
     mMessenger = new ServiceMessenger();
+  }
+  
+  /**
+   * Set up option menu.
+   */
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    super.onCreateOptionsMenu(menu);
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.layout.option_menu, menu);
+    return true;
+  }
+
+  private boolean mIsShowingVideoListView = false;
+  private VideoListView mVideoListView = null;
+  
+  /**
+   * Handling menu click.
+   */
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle item selection
+    switch (item.getItemId()) {
+      case R.id.menu_item_video_list:
+        ViewGroup rootView = (ViewGroup) (findViewById(android.R.id.content).getRootView());
+        if (!mIsShowingVideoListView) {
+          LayoutInflater inflater = getLayoutInflater();
+          mVideoListView = (VideoListView) inflater.inflate(R.layout.video_list_view, rootView, false);
+          rootView.addView(mVideoListView);
+          mIsShowingVideoListView = !mIsShowingVideoListView;
+        }
+        
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
   @Override
