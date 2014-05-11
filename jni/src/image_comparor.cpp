@@ -53,6 +53,10 @@ JNIEXPORT jint JNICALL Java_com_totrit_livemonitor_util_ImageComparor_nativeConv
 JNIEXPORT jboolean JNICALL Java_com_totrit_livemonitor_util_ImageComparor_nativeReleaseLocalImage(
     JNIEnv* env, jobject thiz, jint imageHandle) {
   Mat *accordingMatPtr = reinterpret_cast<Mat*>(imageHandle);
+  if (accordingMatPtr != NULL) {
+    delete []accordingMatPtr->data;
+    accordingMatPtr->release();
+  }
   delete accordingMatPtr;
   return true;
 }
