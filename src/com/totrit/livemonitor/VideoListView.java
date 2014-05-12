@@ -1,8 +1,12 @@
 package com.totrit.livemonitor;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,17 +18,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class VideoListView extends LinearLayout {
-  private RowContent[] mRowContent;
+  private ArrayList<RowContent> mRowContent = new ArrayList<RowContent>();
 
 
   public VideoListView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    initListContent();
-    RowContentAdapter adapter =
-        new RowContentAdapter(getContext(), R.layout.video_list_row, mRowContent);
-
-    ListView listView = (ListView) findViewById(R.id.videoListView);
-    listView.setAdapter(adapter);
   }
   
   public VideoListView(Context context) {
@@ -32,8 +30,46 @@ public class VideoListView extends LinearLayout {
     // TODO Auto-generated constructor stub
   }
   
-  private void initListContent() {
-    //TODO
+  @Override
+  protected void onFinishInflate() {
+	  super.onFinishInflate();
+	  new ListInitTask().execute();
+  }
+  
+  /**
+   * Asynchronously show the list.
+   * @author totrit
+   *
+   */
+  private class ListInitTask extends AsyncTask<Void, Integer, Integer> {
+
+      @Override
+      protected Integer doInBackground(Void... params) {
+          initListContent();
+          return 0;
+      }
+		
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+			
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			initView();
+		}
+
+		private void initListContent() {
+
+		}
+		
+		private void initView() {
+			RowContentAdapter adapter = new RowContentAdapter(getContext(),
+					R.layout.video_list_row, mRowContent);
+
+			ListView listView = (ListView) findViewById(R.id.videoListView);
+			listView.setAdapter(adapter);
+		}
   }
   
   private class RowContent {
@@ -45,9 +81,9 @@ public class VideoListView extends LinearLayout {
 
     Context context;
     int layoutResourceId;
-    RowContent data[] = null;
+    ArrayList<RowContent> data = null;
 
-    public RowContentAdapter(Context context, int layoutResourceId, RowContent[] data) {
+    public RowContentAdapter(Context context, int layoutResourceId, ArrayList<RowContent> data) {
       super(context, layoutResourceId, data);
       this.layoutResourceId = layoutResourceId;
       this.context = context;
@@ -57,31 +93,32 @@ public class VideoListView extends LinearLayout {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       View row = convertView;
-      RowContentHolder holder = null;
+      RowView rowView = null;
 
       if (row == null) {
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+    	  LayoutInflater inflater = (LayoutInflater)context.getSystemService
+    		      (Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(layoutResourceId, parent, false);
 
-        holder = new RowContentHolder();
-        holder.imgIcon = (ImageView) row.findViewById(R.id.rowContentIcon);
-        holder.txtTitle = (TextView) row.findViewById(R.id.rowContentTxtTitle);
+        rowView = new RowView();
+        rowView.mIconView = (ImageView) row.findViewById(R.id.rowContentIcon);
+        rowView.mTitleView = (TextView) row.findViewById(R.id.rowContentTxtTitle);
 
-        row.setTag(holder);
+        row.setTag(rowView);
       } else {
-        holder = (RowContentHolder) row.getTag();
+        rowView = (RowView) row.getTag();
       }
 
-      RowContent rowContent = data[position];
-      holder.txtTitle.setText(rowContent.mName);
-      holder.imgIcon.setImageBitmap(rowContent.mIcon);;
+      RowContent rowContent = data.get(position);
+      rowView.mTitleView.setText(rowContent.mName);
+      rowView.mIconView.setImageBitmap(rowContent.mIcon);;
 
       return row;
     }
 
-    private class RowContentHolder {
-      ImageView imgIcon;
-      TextView txtTitle;
+    private class RowView {
+      ImageView mIconView;
+      TextView mTitleView;
     }
   }
 
