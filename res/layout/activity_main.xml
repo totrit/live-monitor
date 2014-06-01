@@ -6,18 +6,6 @@
     android:background="#0099cc"
     tools:context=".MainActivity" >
 
-     <RelativeLayout
-         android:id="@+id/fullscreen_content_controls"
-         android:visibility="gone"
-         style="?buttonBarStyle"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:layout_gravity="bottom|center_horizontal"
-         android:background="@color/black_overlay"
-         android:orientation="horizontal"
-         tools:ignore="UselessParent" >
-     </RelativeLayout>
-     
      <com.totrit.livemonitor.MainView
          android:id="@+id/mainView"
      	android:layout_width="match_parent"
