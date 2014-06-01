@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" 
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp">
+    android:layout_height="fill_parent">
     
      <ImageView android:id="@+id/rowContentIcon"
         android:contentDescription="@string/video_list_row_image_desc"
@@ -14,15 +13,48 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp" />
-        
-     <TextView android:id="@+id/rowContentTxtTitle"
+     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:textColor="#000000"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp" />
-        
-</LinearLayout>
+        android:orientation="vertical" >
+        <!-- video title -->
+        <TextView
+            android:id="@+id/rowContentTxtTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+            <!-- video date -->
+            <TextView
+                android:id="@+id/rowContentDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:layout_toLeftOf="@+id/rowContentSize"/>
+            <!-- video size -->
+            <TextView
+                android:id="@+id/rowContentSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="25dp"
+                android:textColor="#000000"
+                android:textSize="12sp"/>
+
+        </RelativeLayout>
+     </LinearLayout>
+    </LinearLayout>

@@ -10,5 +10,6 @@
     <string name="video_list_row_image_desc">nothing</string>
     <!-- menus -->
     <string name="open_video_list">Videos...</string>
-
+    <!-- directories -->
+	<string name="videos_save_dir">MotionRecorder/movies</string>
 </resources>

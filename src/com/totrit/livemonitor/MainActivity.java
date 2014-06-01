@@ -23,6 +23,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -115,7 +116,6 @@ public class MainActivity extends Activity {
     return true;
   }
 
-  private boolean mIsShowingVideoListView = false;
   private VideoListView mVideoListView = null;
   
   /**
@@ -127,11 +127,10 @@ public class MainActivity extends Activity {
     switch (item.getItemId()) {
       case R.id.menu_item_video_list:
         ViewGroup rootView = (ViewGroup) (findViewById(android.R.id.content).getRootView());
-        if (!mIsShowingVideoListView) {
+        if (mVideoListView == null) {
           LayoutInflater inflater = getLayoutInflater();
           mVideoListView = (VideoListView) inflater.inflate(R.layout.video_list_view, rootView, false);
           rootView.addView(mVideoListView);
-          mIsShowingVideoListView = !mIsShowingVideoListView;
         }
         
         return true;
@@ -145,6 +144,18 @@ public class MainActivity extends Activity {
     super.onDestroy();
     mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_RELEASE_ALL));
     mMessenger.releaseConnection();
+  }
+  
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+          if (mVideoListView != null) {
+            mVideoListView.destroy();
+            mVideoListView = null;
+            return true;
+          }
+      }
+      return super.onKeyDown(keyCode, event);
   }
 
   private void setupHiderFeature() {

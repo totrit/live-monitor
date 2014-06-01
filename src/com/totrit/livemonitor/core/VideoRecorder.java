@@ -7,6 +7,7 @@ import java.util.Date;
 import com.totrit.livemonitor.R;
 import com.totrit.livemonitor.util.CameraManager;
 import com.totrit.livemonitor.util.Controller;
+import com.totrit.livemonitor.util.Utilities;
 
 import android.os.Environment;
 import android.os.Handler;
@@ -53,8 +54,7 @@ public class VideoRecorder {
     // To be safe, you should check that the SDCard is mounted
     // using Environment.getExternalStorageState() before doing this.
     File mediaStorageDir =
-        new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
-            "MotionRecorder");
+        new File(getSaveRootDir());
     // This location works best if you want the created images to be shared
     // between applications and persist after your app has been uninstalled.
 
@@ -80,6 +80,10 @@ public class VideoRecorder {
     }
 
     return mediaFile.getPath();
+  }
+  
+  public static String getSaveRootDir() {
+    return Utilities.getExternalFSRoot() + "/" + ProcessService.getInstance().getResources().getString(R.string.videos_save_dir);
   }
   
   private class PrivateHandler extends Handler {

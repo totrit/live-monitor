@@ -7,8 +7,9 @@
     android:background="#FFFFFF">
     
      <ListView
-        android:id="@+id/videoListView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+         android:id="@+id/videoListView"
+         android:layout_marginTop="25dp"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"/>
      
 </com.totrit.livemonitor.VideoListView>
