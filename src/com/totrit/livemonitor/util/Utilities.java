@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.os.Environment;
-import android.util.Log;
 
 public class Utilities {
   public static String getExternalFSRoot() {

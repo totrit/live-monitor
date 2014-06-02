@@ -83,7 +83,8 @@ public class VideoListView extends FrameLayout {
 			initView();
 		}
 
-		private void initListContent() {
+		@SuppressWarnings("deprecation")
+        private void initListContent() {
 		  String[] exts = {".mp4"};
 		  File[] list = Utilities.listFiles(VideoRecorder.getSaveRootDir(), exts, true);
 		  for (int i = 0, count = list.length; i < count; i ++) {

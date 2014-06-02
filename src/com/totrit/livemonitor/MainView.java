@@ -7,11 +7,11 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class MainView extends SurfaceView {
+  @SuppressWarnings("unused")
   private final static String LOG_TAG = "MainView";
   private final int mAttachedCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 

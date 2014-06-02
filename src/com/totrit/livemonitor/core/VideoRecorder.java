@@ -3,13 +3,11 @@ package com.totrit.livemonitor.core;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import com.totrit.livemonitor.R;
 import com.totrit.livemonitor.util.CameraManager;
 import com.totrit.livemonitor.util.Controller;
 import com.totrit.livemonitor.util.Utilities;
-
-import android.os.Environment;
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -50,6 +48,7 @@ public class VideoRecorder {
    * @param isVideo
    * @return
    */
+  @SuppressLint("SimpleDateFormat")
   private static String getOutputMediaFile(boolean isVideo) {
     // To be safe, you should check that the SDCard is mounted
     // using Environment.getExternalStorageState() before doing this.
@@ -86,6 +85,7 @@ public class VideoRecorder {
     return Utilities.getExternalFSRoot() + "/" + ProcessService.getInstance().getResources().getString(R.string.videos_save_dir);
   }
   
+  @SuppressLint("HandlerLeak")
   private class PrivateHandler extends Handler {
     private final static int MSG_DELAYED_PAUSE_IF_NO_PREVIEW_CHANGE = 0;
     

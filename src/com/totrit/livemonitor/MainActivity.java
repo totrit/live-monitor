@@ -2,9 +2,7 @@ package com.totrit.livemonitor;
 
 import com.totrit.livemonitor.core.ProcessService;
 import com.totrit.livemonitor.util.Controller;
-import com.totrit.livemonitor.util.SystemUiHider;
-
-import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,10 +10,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,11 +24,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -57,6 +50,7 @@ public class MainActivity extends Activity {
   /**
    * Manage the UI controls' state, etc.
    */
+  @SuppressWarnings("unused")
   private ControlsGroup mUIControlls = null;
 
   @Override
@@ -149,6 +143,7 @@ public class MainActivity extends Activity {
       mMessengerFromServiceToActivity = new Messenger(mPrimeHandler);
     }
 
+    @SuppressWarnings("unused")
     public boolean sendMessage(int what) {
       try {
         Message msg = Message.obtain(null, what);
@@ -239,6 +234,7 @@ public class MainActivity extends Activity {
     mSurfaceView.onConfigurationChanged(newConfig);
   }
 
+  @SuppressLint("HandlerLeak")
   Handler mPrimeHandler = new Handler() {
     @Override
     public void handleMessage(Message msg) {

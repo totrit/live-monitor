@@ -41,16 +41,11 @@ public class ProcessService extends Service {
   private Handler mHandler = null;
   private Messenger mMessengerFromActivityToService = null;
   private Messenger mMessengerFromServiceToActivity = null;
-  private Phase mPhase = Phase.PHASE_NONE;
   private MotionDetector mMotionDetector = null;
   private VideoRecorder mVideoRecorder = null;
   
   // For the convenience of communicating with other classes from core, let them visit ProcessService through this singleton.
   private static ProcessService mInstance = null;
-  
-  private enum Phase {
-    PHASE_NONE, PHASE_PREVIEWING, PHASE_DETECTING, PHASE_RECORDING
-  }
 
   @Override
   public IBinder onBind(Intent intent) {
@@ -75,7 +70,6 @@ public class ProcessService extends Service {
       public void handleMessage(Message msg) {
         switch (msg.what) {
           case MSG_START_OBSERVE_PREVIEW:
-            mPhase = Phase.PHASE_PREVIEWING;
             mMessengerFromServiceToActivity = (Messenger) msg.replyTo;
             mMotionDetector =
                 new MotionDetector(msg.arg1, msg.arg2, mMessengerFromActivityToService);
