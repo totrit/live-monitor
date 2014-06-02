@@ -1,8 +1,5 @@
 package com.totrit.livemonitor.util;
 
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
@@ -187,16 +184,22 @@ public class CameraManager {
     recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
     
     // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+    recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
     
     // Step 4: Set output file
     //TODO: want to append to a previous video file after pause.
-    recorder.setOutputFile(getDestVideoFileDesc(savePath));
+    recorder.setOutputFile(savePath);
 
     // Step 5: Set the preview output
 //    recorder.setPreviewDisplay(mPreviews.get(cameraId).getSurface());
 
-    // Step 6: Prepare configured MediaRecorder
+    // Step 6: Rotate the output video
+    Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+    Camera.getCameraInfo(cameraId, cameraInfo);
+    recorder.setOrientationHint(cameraInfo.orientation);
+    // Step 7: Set recording error callback
+    recorder.setOnErrorListener(new RecordingErrorHandler());
+    // Step 8: Prepare configured MediaRecorder
     try {
       recorder.prepare();
     } catch (IllegalStateException e) {
@@ -221,7 +224,7 @@ public class CameraManager {
       return false;
     }
     
-    // Step 7: Start recording
+    // Step 9: Start recording
     try {
       recorder.start();
     } catch (IllegalStateException e) {
@@ -245,6 +248,22 @@ public class CameraManager {
     return true;
   }
   
+  private class RecordingErrorHandler implements MediaRecorder.OnErrorListener {
+
+    @Override
+    public void onError(MediaRecorder arg0, int arg1, int arg2) {
+      if (Controller.logEnabled()) {
+        Log.d(LOG_TAG, "Error occured when recording.");
+      }
+      destroyMediaRecorder(arg0);
+      // Camera.unlock() may let the previously set preview-call-back out of function, notify ProcessSerivce to redo the register.
+      if (ProcessService.getInstance() != null) {
+        ProcessService.getInstance().previewMaybeChanged();
+      }
+    }
+    
+  }
+  
   public boolean stopRecord(int cameraId) {
     MediaRecorder recorder = mRecorders.get(cameraId);
     if (recorder != null) {
@@ -253,6 +272,12 @@ public class CameraManager {
       } catch (IllegalStateException e) {
         if (Controller.logEnabled()) {
           Log.d(LOG_TAG, "IllegalStateException stopping MediaRecorder: " + e.getMessage());
+        }
+        destroyMediaRecorder(recorder);
+        return false;
+      } catch (Throwable t) {
+        if (Controller.logEnabled()) {
+          Log.d(LOG_TAG, "Runtime error stopping MediaRecorder: " + t.getMessage());
         }
         destroyMediaRecorder(recorder);
         return false;
@@ -269,26 +294,6 @@ public class CameraManager {
       recorder.reset();
       recorder.release();
     }
-  }
-  
-  private FileDescriptor getDestVideoFileDesc(String videoPath) {
-    FileOutputStream out;
-    try {
-      // TODO: will this handle be released later?
-      out = new FileOutputStream(videoPath);
-      return out.getFD();
-    } catch (FileNotFoundException e) {
-      if (Controller.logEnabled()) {
-        e.printStackTrace();
-      }
-      return null;
-    } catch (IOException e) {
-      if (Controller.logEnabled()) {
-        e.printStackTrace();
-      }
-      return null;
-    }
-    
   }
 
 //  public boolean takePicture(int cameraId, Camera.PictureCallback callback) {

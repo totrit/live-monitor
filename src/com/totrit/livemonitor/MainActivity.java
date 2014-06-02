@@ -2,6 +2,7 @@ package com.totrit.livemonitor;
 
 import com.totrit.livemonitor.core.ProcessService;
 import com.totrit.livemonitor.util.Controller;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -24,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -194,14 +196,15 @@ public class MainActivity extends Activity {
             mBtnRecord.setTextColor(getResources().getColor(R.color.hint_color_recording));
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_START_RECORD, Camera.CameraInfo.CAMERA_FACING_BACK, 0));
             // Stop from rotating when recording, because the video will be corrupted if resolution changed during recording.
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+            setRotationEnabled(false);
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
             Toast.makeText(MainActivity.this, R.string.tip_no_rotation_when_recording, Toast.LENGTH_SHORT).show();
           } else {
             mBtnRecord.setText(R.string.btn_record_off_text);
             mBtnRecord.setTextColor(getResources().getColor(R.color.hint_color_not_recording));
             mMessenger.sendMessage(Message.obtain(null, ProcessService.MSG_STOP_RECORD));
             // Restore auto rotating when recording finished.
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            setRotationEnabled(true);
           }
           mBtnRecordState = !mBtnRecordState;
         }
@@ -232,6 +235,29 @@ public class MainActivity extends Activity {
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
     mSurfaceView.onConfigurationChanged(newConfig);
+  }
+  
+  private void setRotationEnabled(boolean enabled) {
+    if (enabled) {
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+      return;
+    }
+    int rotation = getWindowManager().getDefaultDisplay().getRotation();
+
+    switch(rotation) {
+    case Surface.ROTATION_180:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        break;
+    case Surface.ROTATION_270:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);         
+        break;
+    case  Surface.ROTATION_0:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        break;
+    case Surface.ROTATION_90:
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        break;
+    }
   }
 
   @SuppressLint("HandlerLeak")

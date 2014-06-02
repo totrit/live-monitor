@@ -9,7 +9,7 @@
     <string name="tip_no_rotation_when_recording">screen will NOT rotate when recording</string>
     <string name="video_list_row_image_desc">nothing</string>
     <!-- menus -->
-    <string name="open_video_list">Videos...</string>
+    <string name="open_video_list">Videos…</string>
     <!-- directories -->
 	<string name="videos_save_dir">MotionRecorder/movies</string>
 </resources>
