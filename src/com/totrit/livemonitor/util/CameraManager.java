@@ -62,6 +62,8 @@ public class CameraManager {
       int cameraRotation = getOptimalRotation(rotation, cameraId);
       parameters.setRotation(cameraRotation);
       camera.setDisplayOrientation(cameraRotation);
+      // Set auto-focus
+      parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
       // Set into the parameters.
       camera.setParameters(parameters);
       // Start it.

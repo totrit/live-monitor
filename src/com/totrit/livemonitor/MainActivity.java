@@ -20,14 +20,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -76,8 +73,6 @@ public class MainActivity extends Activity {
     return true;
   }
 
-  private VideoListView mVideoListView = null;
-  
   /**
    * Handling menu click.
    */
@@ -86,13 +81,8 @@ public class MainActivity extends Activity {
     // Handle item selection
     switch (item.getItemId()) {
       case R.id.menu_item_video_list:
-        ViewGroup rootView = (ViewGroup) (findViewById(android.R.id.content).getRootView());
-        if (mVideoListView == null) {
-          LayoutInflater inflater = getLayoutInflater();
-          mVideoListView = (VideoListView) inflater.inflate(R.layout.video_list_view, rootView, false);
-          rootView.addView(mVideoListView);
-        }
-        
+        Intent newIntent = new Intent(this, VideoListActivity.class);
+        this.startActivity(newIntent);
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -106,18 +96,6 @@ public class MainActivity extends Activity {
     mMessenger.releaseConnection();
   }
   
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-      if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-          if (mVideoListView != null) {
-            mVideoListView.destroy();
-            mVideoListView = null;
-            return true;
-          }
-      }
-      return super.onKeyDown(keyCode, event);
-  }
-
   private class ServiceMessenger {
     private Messenger mMessengerFromActivityToService;
     private Messenger mMessengerFromServiceToActivity;

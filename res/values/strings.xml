@@ -11,5 +11,9 @@
     <!-- menus -->
     <string name="open_video_list">Videos…</string>
     <!-- directories -->
-	<string name="videos_save_dir">MotionRecorder/movies</string>
+    <string name="videos_save_dir">MotionRecorder/movies</string>
+    <string name="title_activity_video_list">VideoListActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

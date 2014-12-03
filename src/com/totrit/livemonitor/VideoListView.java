@@ -17,32 +17,23 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class VideoListView extends FrameLayout {
+public class VideoListView extends ListView {
   private static final String TAG = "VideoListView";
   private ArrayList<RowContent> mRowContent = new ArrayList<RowContent>();
-  private ProgressBar mProgressbar = null;
+	private ProgressBar mProgress = null;
 
   public VideoListView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    mProgressbar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
-    LayoutParams params = new LayoutParams(100, 100);
-    params.gravity = Gravity.CENTER;
-    mProgressbar.setLayoutParams(params);
-    this.addView(mProgressbar);
-    mProgressbar.setVisibility(VISIBLE);
   }
   
   public VideoListView(Context context) {
@@ -60,6 +51,16 @@ public class VideoListView extends FrameLayout {
 	  new ListInitTask().execute();
   }
   
+  private ProgressBar getProgressBar() {
+	  if (mProgress == null) {
+		  View barView = ((ViewGroup)this.getParent()).findViewById(R.id.progress_bar);
+		  if (barView != null) {
+			  mProgress = (ProgressBar)barView;
+		  }
+	  }
+	  return mProgress;
+  }
+  
   /**
    * Asynchronously show the list.
    * @author totrit
@@ -75,7 +76,10 @@ public class VideoListView extends FrameLayout {
 		
 		@Override
 		protected void onProgressUpdate(Integer... progress) {
-		  mProgressbar.setProgress(progress[0]);
+			ProgressBar progressBar = getProgressBar();
+			if (progressBar != null) {
+				progressBar.setProgress(progress[0]);
+			}
 		}
 
 		@Override
@@ -104,7 +108,7 @@ public class VideoListView extends FrameLayout {
 			RowContentAdapter adapter = new RowContentAdapter(getContext(),
 					R.layout.video_list_row, mRowContent);
 
-			ListView listView = (ListView) findViewById(R.id.videoListView);
+			ListView listView = VideoListView.this;
 			// Set click listner
             listView.setOnItemClickListener(new OnItemClickListener() {
               @Override
@@ -125,8 +129,11 @@ public class VideoListView extends FrameLayout {
             });
 			listView.setAdapter(adapter);
 			invalidate();
-			mProgressbar.setProgress(100);
-			mProgressbar.setVisibility(GONE);
+			ProgressBar progressBar = getProgressBar();
+			if (progressBar != null) {
+				progressBar.setProgress(100);
+				progressBar.setVisibility(GONE);
+			}
 		}
   }
   
