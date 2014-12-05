@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="E:\workspace\live-monitor-11\app\build\intermediates\pre-dexed\debug\opencv library - 2.4.9-1398c4becf92ce492e9793f669169652ed5b1e1b.jar"
+        jar="E:\workspace\live-monitor-11\app\libs\opencv library - 2.4.9.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="b957b215c800f6d229ee8c1c77ea339de8e0f155"/>
+    <item
+        dex="E:\workspace\live-monitor-11\app\build\intermediates\pre-dexed\debug\android-support-v4-53dc0e100940a33a97ee9f38d6381b5dbd0786e9.jar"
+        jar="E:\workspace\live-monitor-11\app\libs\android-support-v4.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="5896b0a4e377ac4242eb2bc785220c1c4fc052f4"/>
+
+</pre-dex-items>
