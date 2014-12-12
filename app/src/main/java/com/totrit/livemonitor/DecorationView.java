@@ -84,6 +84,9 @@ public class DecorationView extends View {
       mMatrix.reset();
       int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
       Size previewSize = CameraManager.getInstance().getPreviewSize(mAttachedCameraId);
+      if (previewSize == null) {
+          return;
+      }
       float hScale = 1.0f, vScale = 1.0f;
       switch (rotation) {
         case Surface.ROTATION_0:

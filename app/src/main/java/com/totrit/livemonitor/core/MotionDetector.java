@@ -126,6 +126,9 @@ public class MotionDetector {
         mLastDetectTime = currentTime;
       }
       Size previewSize = CameraManager.getInstance().getPreviewSize(mCameraId);
+      if (previewSize == null) {
+          return;
+      }
       int newHandle = ImageComparor.getInstance().convertYUVImageToLocalImage(frameData, frameData.length, previewSize.width, previewSize.height);
       // Make sure that the messages and decoded images will not pile.
       mHandler.removeMessages(PrivateHandler.MSG_CAPTURE_DONE);
