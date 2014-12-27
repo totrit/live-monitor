@@ -82,7 +82,8 @@ public class VideoRecorder {
   }
   
   public static String getSaveRootDir() {
-    return Utilities.getExternalFSRoot() + "/" + ProcessService.getInstance().getResources().getString(R.string.videos_save_dir);
+    final String VIDEO_SAVE_DIR = "MotionRecorder/movies";
+    return Utilities.getExternalFSRoot() + "/" + VIDEO_SAVE_DIR;
   }
   
   @SuppressLint("HandlerLeak")

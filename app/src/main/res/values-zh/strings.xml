@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">动态监控</string>
+    <string name="action_settings">设置</string>
+    <string name="btn_record_off_text">开始</string>
+    <string name="btn_record_on_text">停止</string>
+    <string name="cancel">取消</string>
+    <string name="delete_video_dlg_content">确认删除 </string>
+    <string name="delete_video_dlg_title">删除？</string>
+    <string name="ok">确认</string>
+    <string name="open_video_list">视频列表</string>
+    <string name="tip_no_rotation_when_recording">录制时画面将不跟随系统旋转</string>
+    <string name="title_activity_video_list">已录制的视频列表</string>
+    <string name="video_list_row_image_desc"></string>
+</resources>

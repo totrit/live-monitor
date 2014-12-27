@@ -8,7 +8,9 @@ import com.totrit.livemonitor.core.VideoRecorder;
 import com.totrit.livemonitor.util.Controller;
 import com.totrit.livemonitor.util.Utilities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
@@ -28,9 +30,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class VideoListView extends ListView {
-  private static final String TAG = "VideoListView";
-  private ArrayList<RowContent> mRowContent = new ArrayList<RowContent>();
-	private ProgressBar mProgress = null;
+    private static final String TAG = "VideoListView";
+    private ArrayList<RowContent> mRowContent = new ArrayList<RowContent>();
+    private ProgressBar mProgress = null;
 
   public VideoListView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -105,10 +107,10 @@ public class VideoListView extends ListView {
 		}
 		
 		private void initView() {
-			RowContentAdapter adapter = new RowContentAdapter(getContext(),
+			final RowContentAdapter adapter = new RowContentAdapter(getContext(),
 					R.layout.video_list_row, mRowContent);
 
-			ListView listView = VideoListView.this;
+			final ListView listView = VideoListView.this;
 			// Set click listner
             listView.setOnItemClickListener(new OnItemClickListener() {
               @Override
@@ -126,6 +128,28 @@ public class VideoListView extends ListView {
                   getContext().startActivity(intent);
                 }
               }
+            });
+
+            // Set long press listener
+            listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                               int pos, long id) {
+                    AlertDialog.Builder adb = new AlertDialog.Builder(VideoListView.this.getContext());
+                    adb.setTitle(getContext().getString(R.string.delete_video_dlg_title));
+                    adb.setMessage(getContext().getString(R.string.delete_video_dlg_content) + mRowContent.get(pos).mName);
+                    final int positionToRemove = pos;
+                    adb.setNegativeButton(getContext().getString(R.string.cancel), null);
+                    adb.setPositiveButton(getContext().getString(R.string.ok), new AlertDialog.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            new File(mRowContent.get(positionToRemove).mFullPath).delete();
+                            mRowContent.remove(positionToRemove);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                    adb.show();
+                    return true;
+                }
             });
 			listView.setAdapter(adapter);
 			invalidate();

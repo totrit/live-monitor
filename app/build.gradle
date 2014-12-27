@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.totrit.livemonitor"
@@ -13,11 +13,25 @@ android {
 		//}
     }
 
+    signingConfigs {
+        release {
+            storeFile file("d:\\urgent-files-from-fedora\\totrit.keystore")
+            storePassword "nihaoa"
+            keyAlias "totrit"
+            keyPassword "nihaoa"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            signingConfig signingConfigs.release
         }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
