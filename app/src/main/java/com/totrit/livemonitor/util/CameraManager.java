@@ -180,13 +180,24 @@ public class CameraManager {
     camera.unlock();
     recorder = new MediaRecorder();
     recorder.setCamera(camera);
-    
-    // Step 2: Set sources
-    recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-    recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-    
-    // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
-    recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
+
+      // 2: Set source of video and audio
+      recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+      recorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+
+      // 3: Set parameters, Following code does the same as getting a CamcorderProfile (but customizable)
+      recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+    // 3.1 Video Settings
+      Camera.Size videoSize = mCamerasParams.get(cameraId).get().getPreviewSize();
+      recorder.setVideoSize(videoSize.width, videoSize.height);
+      recorder.setVideoFrameRate(10);
+      recorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+      recorder.setVideoEncodingBitRate(500000);
+    // 3.2 Audio Settings
+      recorder.setAudioChannels(1);
+      recorder.setAudioSamplingRate(44100);
+      recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+      recorder.setAudioEncodingBitRate(16);
     
     // Step 4: Set output file
     //TODO: want to append to a previous video file after pause.
